@@ -56,15 +56,15 @@ function Logo() {
       <span role="img">🎫</span>
       <h1>Movie</h1>
     </div>
-  )
+  );
 }
 
-function NumResults() {
+function NumResults({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>x</strong> results
+      Found <strong>{movies.length}</strong> results
     </p>
-  )
+  );
 }
 
 function Search() {
@@ -77,20 +77,20 @@ function Search() {
       value={query}
       onChange={(e) => setQuery(e.target.value)}
     />
-  )
+  );
 }
 
-function Navbar() {
+function Navbar({ movies }) {
   return (
     <nav className="nav-bar">
       <Logo />
       <Search />
-      <NumResults />
+      <NumResults movies={movies} />
     </nav>
-  )
+  );
 }
 
-function ListBox() {
+function ListBox({ movies }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -100,22 +100,19 @@ function ListBox() {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && (
-        <MovieList />
-      )}
+      {isOpen1 && <MovieList movies={movies} />}
     </div>
-  )
+  );
 }
 
-function MovieList() {
-  const [movies, setMovies] = useState(tempMovieData);
+function MovieList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie, index) => (
         <MovieItem movie={movie} key={index} />
       ))}
     </ul>
-  )
+  );
 }
 
 function MovieItem({ movie }) {
@@ -130,7 +127,7 @@ function MovieItem({ movie }) {
         </p>
       </div>
     </li>
-  )
+  );
 }
 
 function ListWatched() {
@@ -152,7 +149,7 @@ function ListWatched() {
         </>
       )}
     </div>
-  )
+  );
 }
 
 function WatchedSummary({ watched }) {
@@ -182,7 +179,7 @@ function WatchedSummary({ watched }) {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function WatchedList({ watched }) {
@@ -209,23 +206,24 @@ function WatchedList({ watched }) {
         </li>
       ))}
     </ul>
-  )
+  );
 }
 
-function Main() {
+function Main({ movies }) {
   return (
     <main className="main">
-      <ListBox />
+      <ListBox movies={movies} />
       <ListWatched />
     </main>
-  )
+  );
 }
 
 export default function App() {
+  const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <Navbar />
-      <Main />
+      <Navbar movies={movies} />
+      <Main movies={movies} />
     </>
   );
 }
