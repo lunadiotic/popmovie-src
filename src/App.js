@@ -212,10 +212,16 @@ export default function App() {
   const [watched, setWatched] = useState([]);
 
   useEffect(() => {
-    fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=oppenheimer`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
-  }, [])
+    async function fetchMovies() {
+      const response = await fetch(
+        `http://www.omdbapi.com/?apikey=${API_KEY}&s=oppenheimer`
+      );
+      const data = await response.json();
+      setMovies(data.Search);
+      console.log(data.Search);
+    }
+    fetchMovies();
+  }, []);
 
   // fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=oppenheimer`)
   //   .then((res) => res.json())
