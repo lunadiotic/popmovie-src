@@ -97,19 +97,19 @@ function BoxMovies({ children }) {
   );
 }
 
-function MovieList({ movies }) {
+function MovieList({ movies, onSelectMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie, index) => (
-        <MovieItem movie={movie} key={index} />
+        <MovieItem movie={movie} key={index} onSelectMovie={onSelectMovie} />
       ))}
     </ul>
   );
 }
 
-function MovieItem({ movie }) {
+function MovieItem({ movie, onSelectMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -175,6 +175,17 @@ function WatchedSummary({ watched }) {
   );
 }
 
+function MovieDetails({ selectedId, onCloseMovie }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &#x2715;
+      </button>
+      {selectedId}
+    </div>
+  );
+}
+
 function WatchedList({ watched }) {
   return (
     <ul className="list">
@@ -229,9 +240,8 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
-  const [query, setQuery] = useState("");
-
-  const tempQuery = "oppenheimer";
+  const [query, setQuery] = useState("oppenheimer");
+  const [selectedId, setSelectedId] = useState(null);
 
   // useEffect(() => {
   //   console.log("1");
@@ -242,6 +252,14 @@ export default function App() {
   // });
 
   // console.log("3");
+
+  function handleSelectMovie(id) {
+    setSelectedId((selectedId) => (selectedId === id ? null : id));
+  }
+
+  function handleCloseMovie() {
+    setSelectedId(null);
+  }
 
   useEffect(() => {
     async function fetchMovies() {
@@ -261,6 +279,8 @@ export default function App() {
         if (data.Response === "False") {
           throw new Error(data.Error);
         }
+
+        console.log(data.Search);
 
         setMovies(data.Search);
       } catch (e) {
@@ -297,12 +317,23 @@ export default function App() {
       <Main>
         <BoxMovies>
           {isLoading && <Loader />}
-          {!isLoading && !isError && <MovieList movies={movies} />}
+          {!isLoading && !isError && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {isError && <ErrorMessage message={isError} />}
         </BoxMovies>
         <BoxMovies>
-          <WatchedSummary watched={watched} />
-          <WatchedList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchedList watched={watched} />{" "}
+              <WatchedSummary watched={watched} />
+            </>
+          )}
         </BoxMovies>
         {/* <BoxMovies>
           <MovieList movies={movies} />
