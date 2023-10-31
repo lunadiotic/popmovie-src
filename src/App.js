@@ -69,8 +69,7 @@ function NumResults({ movies }) {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -230,15 +229,27 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState("");
+  const [query, setQuery] = useState("");
 
-  const query = "iaolknmqwekjn";
+  const tempQuery = "oppenheimer";
+
+  // useEffect(() => {
+  //   console.log("1");
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log("2");
+  // });
+
+  // console.log("3");
 
   useEffect(() => {
     async function fetchMovies() {
       try {
         setIsLoading(true);
+        setIsError("");
         const response = await fetch(
-          `http://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`
+          `https://www.omdbapi.com/?apikey=${API_KEY}&s=${query}`
         );
 
         if (!response.ok) {
@@ -259,8 +270,15 @@ export default function App() {
         setIsLoading(false);
       }
     }
+
+    if (query.length < 3) {
+      setMovies([]);
+      setIsError("");
+      return;
+    }
+
     fetchMovies();
-  }, []);
+  }, [query]);
 
   // fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=oppenheimer`)
   //   .then((res) => res.json())
@@ -273,7 +291,7 @@ export default function App() {
     <>
       <Navbar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
       <Main>
